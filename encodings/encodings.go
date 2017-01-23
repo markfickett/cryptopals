@@ -8,13 +8,39 @@ package encodings
 import "bytes"
 import "fmt"
 
-func DecodeHex(string) []byte {
+func DecodeHex(encoded_hex string) []byte {
+  encoded_runes := []rune(encoded_hex)
   var decoded bytes.Buffer
-  decoded.WriteByte(0x4d)  // 'M'
-  decoded.WriteByte(0x61)  // 'a'
-  decoded.WriteByte(0x6e)  // 'n'
+  if len(encoded_runes) == 0 {
+    return decoded.Bytes()
+  }
+  for low_nibble_index := (len(encoded_runes) - 1) % 2;
+      low_nibble_index < len(encoded_runes);
+      low_nibble_index += 2 {
+    var decoded_byte byte = 0x0
+    if low_nibble_index - 1 >= 0 {
+      decoded_byte |= hex_char_to_byte(encoded_runes[low_nibble_index - 1]) << 4
+      //fmt.Printf("%s", string(encoded_runes[low_nibble_index - 1]))
+    }
+    decoded_byte |= hex_char_to_byte(encoded_runes[low_nibble_index])
+    //fmt.Printf(
+    //    "%s => 0x%x\n", string(encoded_runes[low_nibble_index]), decoded_byte)
+    decoded.WriteByte(decoded_byte)
+  }
   return decoded.Bytes()
 }
+
+
+func hex_char_to_byte(value rune) byte {
+  if value >= '0' && value <= '9' {
+    return byte(value - '0')
+  } else if value >= 'a' && value <= 'f' {
+    return 10 + byte(value - 'a')
+  } else {
+    panic(fmt.Sprintf("Rune %q is invalid as hex.", value))
+  }
+}
+
 
 func to_base64_char(value byte) string {
   i := value
@@ -87,7 +113,8 @@ func SelfTest() {
     panic(fmt.Sprintf("expected %q but got %q", expected_b64, actual_b64))
   }
 
-  input_hex := "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
+  input_hex := "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706" +
+      "f69736f6e6f7573206d757368726f6f6d"
   expected_b64 = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
   actual_b64 = EncodeBase64(DecodeHex(input_hex))
   if actual_b64 != expected_b64 {
