@@ -32,7 +32,23 @@ func DecodeHex(encoded_hex string) []byte {
 
 
 func EncodeHex(byte_buffer []byte) string {
-  return fmt.Sprintf("%x", string(byte_buffer))
+  var encoded bytes.Buffer
+  for _, in_byte := range byte_buffer {
+    encoded.WriteString(nibble_to_hex_string(in_byte >> 4))
+    encoded.WriteString(nibble_to_hex_string(in_byte & 0xF))
+  }
+  return string(encoded.String())
+}
+
+
+func nibble_to_hex_string(value byte) string {
+  if value < 10 {
+    return string('0' + value)
+  } else if value < 16 {
+    return string('a' + (value - 10))
+  } else {
+    panic(fmt.Sprintf("Value 0x%x too big for hex nibble.", value))
+  }
 }
 
 
