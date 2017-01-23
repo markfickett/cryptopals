@@ -31,6 +31,11 @@ func DecodeHex(encoded_hex string) []byte {
 }
 
 
+func EncodeHex(byte_buffer []byte) string {
+  return fmt.Sprintf("%x", string(byte_buffer))
+}
+
+
 func hex_char_to_byte(value rune) byte {
   if value >= '0' && value <= '9' {
     return byte(value - '0')
