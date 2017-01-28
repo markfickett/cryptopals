@@ -5,19 +5,18 @@
 package operations
 
 import "bytes"
-import "fmt"
 
 
-// https://cryptopals.com/sets/1/challenges/2
-func Xor(a []byte, b []byte) []byte {
-  if len(a) != len(b) {
-    panic(fmt.Sprintf(
-        "Cannot xor byte streams of differing length: %d != %d.",
-        len(a), len(b)))
-  }
+/**
+ * XOR two byte arrays. Output is the length of the data buffer. If the key is
+ * shorter, repeat the key to make the length of the data; if the key is
+ * shorter, only use up to len(data) of the key.
+ * https://cryptopals.com/sets/1/challenges/2
+ */
+func Xor(key []byte, data []byte) []byte {
   var out bytes.Buffer
-  for i, a_byte := range a {
-    out.WriteByte(a_byte ^ b[i])
+  for i, data_byte := range data {
+    out.WriteByte(data_byte ^ key[i % len(key)])
   }
   return out.Bytes()
 }

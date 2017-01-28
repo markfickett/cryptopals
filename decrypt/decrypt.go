@@ -5,8 +5,6 @@
 
 package decrypt
 
-import "bytes"
-
 import "../operations"
 
 
@@ -38,9 +36,7 @@ func XorDecrypt(cipher_text []byte) (int, byte, string) {
   max_score := 0
   var best_key byte = 0x0
   for key := 0x0; key < (0x1 << 8); key++ {
-    decrypted_text := string(operations.Xor(
-        cipher_text,
-        bytes.Repeat([]byte{ byte(key) }, len(cipher_text))))
+    decrypted_text := string(operations.Xor([]byte{ byte(key) }, cipher_text))
     score := GetScore(decrypted_text)
     if score > max_score {
       max_score = score
