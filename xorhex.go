@@ -11,8 +11,6 @@ import "./encodings"
 import "./operations"
 
 func main() {
-  operations.SelfTest()
-
   if len(os.Args) != 3 {
     panic(fmt.Sprintf("Usage: %s HEX_TEXT HEX_TEXT", os.Args[0]))
   }

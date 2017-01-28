@@ -6,7 +6,6 @@ import "os"
 import "./encodings"
 
 func main() {
-  encodings.SelfTest()
   if len(os.Args) != 2 {
     panic(fmt.Sprintf("Usage: %s TEXT_TO_CONVERT", os.Args[0]))
   }
