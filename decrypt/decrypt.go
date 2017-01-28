@@ -3,18 +3,15 @@
  * https://cryptopals.com/sets/1/challenges/3
  */
 
-package main
+package decrypt
 
 import "bytes"
-import "fmt"
-import "os"
 
-import "./encodings"
-import "./operations"
+import "../operations"
 
 
 /**
- * Returns a score for some text for how likely it is to be clear text.
+ * Returns a score for some text for how likely it is to be English clear text.
  * The score is the number of Latin letters in the string.
  */
 func get_score(text string) int {
@@ -28,11 +25,12 @@ func get_score(text string) int {
 }
 
 
-func main() {
-  if len(os.Args) != 2 {
-    panic(fmt.Sprintf("Usage: %s TEXT_TO_DECRYPT", os.Args[0]))
-  }
-  cipher_text := encodings.DecodeHex(os.Args[1])
+/**
+ * Returns a (score, key, cleartext) triple for decrypted text. Uses a single-
+ * byte key to XOR text, and tries all single-byte keys to find the best scoring
+ * decryption.
+ */
+func XorDecrypt(cipher_text []byte) (int, byte, string) {
   clear_text := ""
   max_score := 0
   var best_key byte = 0x0
@@ -47,5 +45,5 @@ func main() {
       clear_text = decrypted_text
     }
   }
-  fmt.Printf("Key 0x%x scored %d. %s\n", best_key, max_score, clear_text)
+  return max_score, best_key, clear_text
 }
