@@ -14,14 +14,17 @@ import "../operations"
  * Returns a score for some text for how likely it is to be English clear text.
  * The score is the number of Latin letters in the string.
  */
-func get_score(text string) int {
-  num_e := 0
+func GetScore(text string) int {
+  score := 0
   for _, c := range text {
-    if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') {
-      num_e += 1
+    if c >= 'a' && c <= 'z' {
+      score += 2
+    }
+    if c >= 'A' && c <= 'Z' {
+      score += 1
     }
   }
-  return num_e
+  return score
 }
 
 
@@ -38,7 +41,7 @@ func XorDecrypt(cipher_text []byte) (int, byte, string) {
     decrypted_text := string(operations.Xor(
         cipher_text,
         bytes.Repeat([]byte{ byte(key) }, len(cipher_text))))
-    score := get_score(decrypted_text)
+    score := GetScore(decrypted_text)
     if score > max_score {
       max_score = score
       best_key = byte(key)

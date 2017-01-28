@@ -1,10 +1,14 @@
 /**
  * Decrypt ciphertext which has been XORed with a single byte key.
- * https://cryptopals.com/sets/1/challenges/3
+ * https://cryptopals.com/sets/1/challenges/3 and 4
+ *
+ * Reads from stdin and brute-force decrypts lines. If given multiple lines,
+ * finds the line with the highest score (most likelihood of decryption).
  */
 
 package main
 
+import "bufio"
 import "fmt"
 import "os"
 
@@ -13,9 +17,28 @@ import "./encodings"
 
 
 func main() {
-  if len(os.Args) != 2 {
-    panic(fmt.Sprintf("Usage: %s TEXT_TO_DECRYPT", os.Args[0]))
+  if len(os.Args) != 1 {
+    panic(fmt.Sprintf("Usage: %s < input_lines.txt", os.Args[0]))
   }
-  score, key, clear_text := decrypt.XorDecrypt(encodings.DecodeHex(os.Args[1]))
-  fmt.Printf("Key 0x%x scored %d. %s\n", key, score, clear_text)
+  best_line_num := 0
+  max_score := 0
+  var best_key byte = 0x0
+  best_text := ""
+
+  scanner := bufio.NewScanner(os.Stdin)
+  line_num := 1
+  for scanner.Scan() {
+    score, key, clear_text := decrypt.XorDecrypt(
+        encodings.DecodeHex(scanner.Text()))
+    if score > max_score {
+      best_line_num = line_num
+      max_score = score
+      best_key = key
+      best_text = clear_text
+    }
+    line_num++
+  }
+  fmt.Printf(
+      "Line %d: key 0x%x scored %d\t%q\n",
+      best_line_num, best_key, max_score, best_text)
 }

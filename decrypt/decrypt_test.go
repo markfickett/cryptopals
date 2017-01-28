@@ -17,3 +17,16 @@ func TestDecryptSingleByteXor(t *testing.T) {
         expected_word, clear_text))
   }
 }
+
+
+func TestScore(t *testing.T) {
+  non_english := "iU\x1chkZHXPIK\x16tXKAnQWs\x1bAD>XtbxIK"
+  bad_score := GetScore(non_english)
+  english := "Now that the party is jumping\n"
+  good_score := GetScore(english)
+  if bad_score >= good_score {
+    t.Error(fmt.Sprintf(
+        "bad %q scored %d >= good %q which scored %d",
+        bad_score, non_english, good_score, english))
+  }
+}
