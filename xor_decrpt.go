@@ -12,8 +12,8 @@ import "bufio"
 import "fmt"
 import "os"
 
-import "./decrypt"
 import "./encodings"
+import "./xor_crypt"
 
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
   scanner := bufio.NewScanner(os.Stdin)
   line_num := 1
   for scanner.Scan() {
-    score, key, clear_text := decrypt.XorDecrypt(
+    score, key, clear_text := xor_crypt.XorDecrypt(
         encodings.DecodeHex(scanner.Text()))
     if score > max_score {
       best_line_num = line_num

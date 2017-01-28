@@ -1,4 +1,4 @@
-package decrypt
+package xor_crypt
 
 import "fmt"
 import "strings"

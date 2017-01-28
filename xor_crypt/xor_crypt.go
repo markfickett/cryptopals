@@ -3,7 +3,7 @@
  * https://cryptopals.com/sets/1/challenges/3
  */
 
-package decrypt
+package xor_crypt
 
 import "../operations"
 
