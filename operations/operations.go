@@ -20,3 +20,17 @@ func Xor(key []byte, data []byte) []byte {
   }
   return out.Bytes()
 }
+
+
+/**
+ * Offsets the starting point within a byte array used as an encryption key.
+ * For example, to continue encrypting with a second block of text:
+ *     key: ICEICEICEIC (no key offset)
+ *    text: Hello world
+ *     key: EICEICEICEI (offset % 3 = 2)
+ *    text: , how are y
+ */
+func Offset(buf []byte, raw_offset int) []byte {
+  offset := raw_offset % len(buf)
+  return append(buf[offset:], buf[:offset]...)
+}
