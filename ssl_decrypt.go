@@ -1,9 +1,10 @@
 /**
  * Decrypt using OpenSSL block cipher. Equivalent to:
-   openssl enc -aes-128-ecb -nosalt -a -in test.txt -k "YELLOW SUBMARINE" \
-       -out test.txt.enc
-   openssl enc -aes-128-ecb -nosalt -a -d -in test.txt.enc -k "YELLOW SUBMARINE"
- * (Decrypting, OpenSSL ignores \n in base64'd input.)
+   KEY=59454c4c4f57205355424d4152494e45
+   openssl enc -aes-128-ecb -nosalt -a -in test.txt -K $KEY -out test.txt.enc
+   openssl enc -aes-128-ecb -nosalt -a -d -in test.txt.enc -K $KEY
+ * Decrypting, OpenSSL ignores \n in base64'd input. The hex key is
+ * ''.join('%x' % ord(c) for c in 'YELLOW SUBMARINE').
  *
  * https://sosedoff.com/2015/05/22/data-encryption-in-go-using-openssl.html
  */
@@ -12,12 +13,13 @@ package main
 
 import "log"
 
+// Use "go get <imported path below>" to fetch the library.
 import "github.com/spacemonkeygo/openssl"
 
 import "./encodings"
 
 func main() {
-  ciphertext_b64 := "EF+K58xQEs8UTb6s7f+oKQ=="  // "test"
+  ciphertext_b64 := "WVmOEnGj4iK3UDEZVvVYZw=="  // "test"
   ciphertext := encodings.DecodeBase64(ciphertext_b64)
 
   key := []byte("YELLOW SUBMARINE")
@@ -34,14 +36,12 @@ func main() {
   if err != nil {
     panic("Unable to create context for encryption!")
   }
-  log.Printf("Created context: %s", ctx)
 
   plaintext, err := ctx.DecryptUpdate(ciphertext)
   if err != nil {
     log.Printf("Initial decryption failed: %q", err)
     panic(err)
   }
-  log.Printf("Decrypted some: %q", plaintext)
   finalplaintext, err := ctx.DecryptFinal()
   if err != nil {
     log.Printf("Final decryption failed: %q", err)
