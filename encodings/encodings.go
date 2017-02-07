@@ -5,6 +5,7 @@
 
 package encodings
 
+import "encoding/base64"
 import "bytes"
 import "fmt"
 
@@ -119,4 +120,12 @@ func EncodeBase64(byte_buffer[] byte) string {
     }
   }
   return encoded.String()
+}
+
+func DecodeBase64(encoded string) []byte {
+  data, err := base64.StdEncoding.DecodeString(encoded)
+  if err != nil {
+    panic(err)
+  }
+  return data
 }

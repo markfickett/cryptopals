@@ -23,6 +23,17 @@ func TestBase64EncodPadded(t *testing.T) {
 }
 
 
+func TestBase64RoundTrip(t *testing.T) {
+  buf := []byte{0x1, 0x2, 0x3, 0x60, 0x61, 0x62}
+  encoded := EncodeBase64(buf)
+  decoded := DecodeBase64(encoded)
+  if string(decoded) != string(buf) {
+    t.Error(fmt.Sprintf(
+        "input %q became %q doesn't match output %q", buf, encoded, decoded))
+  }
+}
+
+
 func TestHexDecode(t *testing.T) {
   input_hex := "49276d206b696c6c696e6720796f757220627261696e206c696b652061207" +
       "06f69736f6e6f7573206d757368726f6f6d"
