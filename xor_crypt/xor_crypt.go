@@ -5,7 +5,7 @@
 
 package xor_crypt
 
-import "../operations"
+import "../blocks"
 
 
 /**
@@ -31,12 +31,12 @@ func GetScore(text string) int {
  * byte key to XOR text, and tries all single-byte keys to find the best scoring
  * decryption.
  */
-func XorDecrypt(cipher_text []byte) (int, byte, string) {
+func XorDecrypt(cipher_text *blocks.Blocks) (int, byte, string) {
   clear_text := ""
   max_score := 0
   var best_key byte = 0x0
   for key := 0x0; key < (0x1 << 8); key++ {
-    decrypted_text := string(operations.Xor([]byte{ byte(key) }, cipher_text))
+    decrypted_text := cipher_text.Xor(blocks.FromByte(byte(key))).ToString()
     score := GetScore(decrypted_text)
     if score > max_score {
       max_score = score
