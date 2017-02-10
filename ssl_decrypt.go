@@ -16,12 +16,11 @@ import "log"
 // Use "go get <imported path below>" to fetch the library.
 import "github.com/spacemonkeygo/openssl"
 
-import "./encodings"
+import "./blocks"
+
 
 func main() {
-  ciphertext_b64 := "WVmOEnGj4iK3UDEZVvVYZw=="  // "test"
-  ciphertext := encodings.DecodeBase64(ciphertext_b64)
-
+  ciphertext := blocks.FromBase64("WVmOEnGj4iK3UDEZVvVYZw==")  // "test"
   key := []byte("YELLOW SUBMARINE")
 
   cipher, err := openssl.GetCipherByName("aes-128-ecb")
@@ -37,7 +36,7 @@ func main() {
     panic("Unable to create context for encryption!")
   }
 
-  plaintext, err := ctx.DecryptUpdate(ciphertext)
+  plaintext, err := ctx.DecryptUpdate(ciphertext.ToBytes())
   if err != nil {
     log.Printf("Initial decryption failed: %q", err)
     panic(err)
@@ -49,5 +48,5 @@ func main() {
   }
   plaintext = append(plaintext, finalplaintext...)
 
-  log.Printf("Decoded %q as %q.\n", ciphertext_b64, plaintext)
+  log.Printf("Decoded %q as %q.\n", ciphertext.ToBase64(), plaintext)
 }
