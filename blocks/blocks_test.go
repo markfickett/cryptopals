@@ -57,3 +57,14 @@ func TestXor(t *testing.T) {
     t.Error(fmt.Sprintf("%s ^ %s = %s but got %s", a, b, expected, actual))
   }
 }
+
+
+func TestHammingDistance(t *testing.T) {
+  dist := FromString("this is a test").HammingDistance(
+      FromString("wokka wokka!!!"))
+  expected_dist := 37
+  if dist != expected_dist {
+    t.Error(fmt.Sprintf(
+        "Hamming Distance is %d but got %d.", expected_dist, dist))
+  }
+}

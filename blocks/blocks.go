@@ -91,6 +91,33 @@ func (b *Blocks) Xor(key *Blocks) *Blocks {
 }
 
 
+/**
+ * Returns the hamming distance between two Blocks (the number of differing
+ * bits). It is an error to compare different-sized Blocks.
+ *
+ * https://cryptopals.com/sets/1/challenges/6
+ */
+func (b* Blocks) HammingDistance(other* Blocks) int {
+  if b.buf.Len() != other.buf.Len() {
+    panic("Cannot compute Hamming distance for mismatched Blocks.")
+  }
+  differing := 0
+  b_bytes := b.buf.Bytes()
+  a_bytes := other.buf.Bytes()
+  for i, a_byte := range a_bytes {
+    for j := byte(0x80); j > 0x0; j >>= 1 {
+      if (a_byte & j) != (b_bytes[i] & j) {
+        differing++
+      }
+    }
+    //log.Printf(
+    //    "%s 0x%x\t%s 0x%x\t%d",
+    //    string(a_byte), a_byte, string(b_bytes[i]), b_bytes[i], differing)
+  }
+  return differing
+}
+
+
 func FromHex(encoded_hex string) *Blocks {
   encoded_runes := []rune(encoded_hex)
   var decoded bytes.Buffer
