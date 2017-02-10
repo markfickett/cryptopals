@@ -10,50 +10,60 @@ import "bytes"
 import "fmt"
 
 
-type blocks struct {
+type Blocks struct {
   block_size int
   buf bytes.Buffer
 }
 
 
-func New() *blocks {
-  return &blocks{block_size: 16}
+func New() *Blocks {
+  return &Blocks{block_size: 16}
 }
 
 
-func FromBytes(input_buf []byte) *blocks {
-  return &blocks{block_size: 16, buf: *bytes.NewBuffer(input_buf)}
+func FromBytes(input_buf []byte) *Blocks {
+  return &Blocks{block_size: 16, buf: *bytes.NewBuffer(input_buf)}
 }
 
 
-func FromString(str string) *blocks {
+func FromByte(value byte) *Blocks {
+  return FromBytes([]byte{ value })
+}
+
+
+func FromString(str string) *Blocks {
   return FromBytes([]byte(str))
 }
 
 
-func FromBytesBuffer(input_buf bytes.Buffer) *blocks {
-  return &blocks{block_size: 16, buf: input_buf}
+func (b *Blocks) ToString() string {
+  return b.buf.String()
 }
 
 
-func Equal(a *blocks, b *blocks) bool {
+func FromBytesBuffer(input_buf bytes.Buffer) *Blocks {
+  return &Blocks{block_size: 16, buf: input_buf}
+}
+
+
+func Equal(a *Blocks, b *Blocks) bool {
   return bytes.Equal(a.buf.Bytes(), b.buf.Bytes())
 }
 
 
-func (b *blocks) AppendBytes(buf []byte) {
+func (b *Blocks) AppendBytes(buf []byte) {
   b.buf.Write(buf)
 }
 
 
 /**
- * XORs all the data in these blocks using the given blocks as a key. (The
+ * XORs all the data in these Blocks using the given Blocks as a key. (The
  * key may be truncated or repeated to cover all the data.)
  *
- * Return the new blocks that result.
+ * Return the new Blocks that result.
  * https://cryptopals.com/sets/1/challenges/2
  */
-func (b *blocks) Xor(key *blocks) *blocks {
+func (b *Blocks) Xor(key *Blocks) *Blocks {
   var out bytes.Buffer
   if key.buf.Len() == 0 {
     return FromBytesBuffer(b.buf)
@@ -66,7 +76,7 @@ func (b *blocks) Xor(key *blocks) *blocks {
 }
 
 
-func FromHex(encoded_hex string) *blocks {
+func FromHex(encoded_hex string) *Blocks {
   encoded_runes := []rune(encoded_hex)
   var decoded bytes.Buffer
   if len(encoded_runes) == 0 {
@@ -89,7 +99,7 @@ func FromHex(encoded_hex string) *blocks {
 }
 
 
-func (b* blocks) ToHex() string {
+func (b* Blocks) ToHex() string {
   var encoded bytes.Buffer
   for _, in_byte := range b.buf.Bytes() {
     encoded.WriteString(nibble_to_hex_string(in_byte >> 4))
@@ -147,7 +157,7 @@ func to_base64_char(value byte) string {
 }
 
 
-func (b *blocks) ToBase64() string {
+func (b *Blocks) ToBase64() string {
   output_char_index := 5
   var encoded_6bits byte = 0x0
   var encoded bytes.Buffer
@@ -181,7 +191,7 @@ func (b *blocks) ToBase64() string {
 }
 
 
-func FromBase64(encoded string) *blocks {
+func FromBase64(encoded string) *Blocks {
   data, err := base64.StdEncoding.DecodeString(encoded)
   if err != nil {
     panic(err)
