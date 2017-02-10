@@ -4,13 +4,12 @@ import "fmt"
 import "strings"
 import "testing"
 
-import "../encodings"
-import "../operations"
+import "../blocks"
 
 func TestDecryptSingleByteXor(t *testing.T) {
   cipher_text := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e" +
       "783a393b3736"
-  _, _, clear_text := XorDecrypt(encodings.DecodeHex(cipher_text))
+  _, _, clear_text := XorDecrypt(blocks.FromHex(cipher_text))
   expected_word := "bacon"
   if !strings.Contains(clear_text, expected_word) {
     t.Error(fmt.Sprintf(
@@ -42,8 +41,8 @@ func TestEncrypt(t *testing.T) {
       "65272a282b2f20430a652e2c652a3124333a653e2b2027630c692b2028316528632630" +
       "2e27282f"
   key := "ICE"
-  cipher_text := operations.Xor([]byte(key), []byte(clear_text))
-  cipher_hex := encodings.EncodeHex(cipher_text)
+  cipher_text := blocks.FromString(clear_text).Xor(blocks.FromString(key))
+  cipher_hex := cipher_text.ToHex()
   if cipher_hex != expected_hex {
     t.Error(fmt.Sprintf(
         "%q ^ %q encrypted as %q, should be %q",
