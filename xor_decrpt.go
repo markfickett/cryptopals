@@ -9,7 +9,7 @@
 package main
 
 import "bufio"
-import "fmt"
+import "log"
 import "os"
 
 import "./blocks"
@@ -18,7 +18,7 @@ import "./xor_crypt"
 
 func main() {
   if len(os.Args) != 1 {
-    panic(fmt.Sprintf("Usage: %s < input_lines.txt", os.Args[0]))
+    log.Fatalf("Usage: %s < input_lines.txt", os.Args[0])
   }
   best_line_num := 0
   max_score := 0
@@ -38,7 +38,7 @@ func main() {
     }
     line_num++
   }
-  fmt.Printf(
+  log.Printf(
       "Line %d: key 0x%x scored %d\t%q\n",
       best_line_num, best_key, max_score, best_text)
 }
