@@ -21,6 +21,16 @@ func New() *Blocks {
 }
 
 
+func (b *Blocks) Append(other *Blocks) {
+  b.buf.Write(other.buf.Bytes())
+}
+
+
+func (b *Blocks) Empty() bool {
+  return b.buf.Len() == 0
+}
+
+
 func FromBytes(input_buf []byte) *Blocks {
   return &Blocks{block_size: 16, buf: *bytes.NewBuffer(input_buf)}
 }

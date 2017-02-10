@@ -7,11 +7,15 @@
  * ''.join('%x' % ord(c) for c in 'YELLOW SUBMARINE').
  *
  * https://sosedoff.com/2015/05/22/data-encryption-in-go-using-openssl.html
+ *
+ * https://cryptopals.com/sets/1/challenges/7
  */
 
 package main
 
+import "bufio"
 import "log"
+import "os"
 
 // Use "go get <imported path below>" to fetch the library.
 import "github.com/spacemonkeygo/openssl"
@@ -20,7 +24,21 @@ import "./blocks"
 
 
 func main() {
-  ciphertext := blocks.FromBase64("WVmOEnGj4iK3UDEZVvVYZw==")  // "test"
+  if len(os.Args) > 2 || (len(os.Args) == 2 && os.Args[1] != "test") {
+    log.Fatalf("Usage: %s [test|< input_base64.txt]", os.Args[0])
+  }
+
+  cipher_text := blocks.New()
+  if len(os.Args) == 2 {
+    cipher_text = blocks.FromBase64("WVmOEnGj4iK3UDEZVvVYZw==")  // "test"
+    log.Printf("Decoding sample: %q\n", cipher_text.ToBase64())
+  } else {
+    scanner := bufio.NewScanner(os.Stdin)
+    for scanner.Scan() {
+      cipher_text.Append(blocks.FromBase64(scanner.Text()))
+    }
+  }
+
   key := []byte("YELLOW SUBMARINE")
 
   cipher, err := openssl.GetCipherByName("aes-128-ecb")
@@ -36,7 +54,7 @@ func main() {
     panic("Unable to create context for encryption!")
   }
 
-  plaintext, err := ctx.DecryptUpdate(ciphertext.ToBytes())
+  plaintext, err := ctx.DecryptUpdate(cipher_text.ToBytes())
   if err != nil {
     log.Printf("Initial decryption failed: %q", err)
     panic(err)
@@ -48,5 +66,5 @@ func main() {
   }
   plaintext = append(plaintext, finalplaintext...)
 
-  log.Printf("Decoded %q as %q.\n", ciphertext.ToBase64(), plaintext)
+  log.Printf("Decoded as:\n%s\n", plaintext)
 }
