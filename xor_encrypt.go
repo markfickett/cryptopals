@@ -9,26 +9,23 @@ import "fmt"
 import "io"
 import "os"
 
-import "./encodings"
-import "./operations"
+import "./blocks"
 
 
 func main() {
   if len(os.Args) != 2 {
     panic(fmt.Sprintf("Usage: %s key < input_lines.txt", os.Args[0]))
   }
-  key := []byte(os.Args[1])
+  key := blocks.FromString(os.Args[1])
+  text := blocks.New()
 
   buf := make([]byte, 16)
   reader := io.Reader(os.Stdin)
-  offset := 0
   n, _ := io.ReadFull(reader, buf)
   for n > 0 {
-    fmt.Printf(
-        "%s\n",
-        encodings.EncodeHex(
-            operations.Xor(operations.Offset(key, offset), buf[:n])))
-    offset += n
+    text.AppendBytes(buf[:n])
     n, _ = io.ReadFull(reader, buf)
   }
+  fmt.Printf(text.Xor(key).ToHex())
+  fmt.Println()
 }

@@ -16,13 +16,18 @@ type blocks struct {
 }
 
 
-func NewBlocks() *blocks {
+func New() *blocks {
   return &blocks{block_size: 16}
 }
 
 
 func FromBytes(input_buf []byte) *blocks {
   return &blocks{block_size: 16, buf: *bytes.NewBuffer(input_buf)}
+}
+
+
+func FromString(str string) *blocks {
+  return FromBytes([]byte(str))
 }
 
 
@@ -33,6 +38,31 @@ func FromBytesBuffer(input_buf bytes.Buffer) *blocks {
 
 func Equal(a *blocks, b *blocks) bool {
   return bytes.Equal(a.buf.Bytes(), b.buf.Bytes())
+}
+
+
+func (b *blocks) AppendBytes(buf []byte) {
+  b.buf.Write(buf)
+}
+
+
+/**
+ * XORs all the data in these blocks using the given blocks as a key. (The
+ * key may be truncated or repeated to cover all the data.)
+ *
+ * Return the new blocks that result.
+ * https://cryptopals.com/sets/1/challenges/2
+ */
+func (b *blocks) Xor(key *blocks) *blocks {
+  var out bytes.Buffer
+  if key.buf.Len() == 0 {
+    return FromBytesBuffer(b.buf)
+  }
+  key_bytes := key.buf.Bytes()
+  for i, data_byte := range b.buf.Bytes() {
+    out.WriteByte(data_byte ^ key_bytes[i % len(key_bytes)])
+  }
+  return FromBytesBuffer(out)
 }
 
 
