@@ -26,8 +26,18 @@ func FromBytes(input_buf []byte) *Blocks {
 }
 
 
+func (b *Blocks) AppendBytes(buf []byte) {
+  b.buf.Write(buf)
+}
+
+
 func FromByte(value byte) *Blocks {
   return FromBytes([]byte{ value })
+}
+
+
+func (b *Blocks) ToBytes() []byte {
+  return b.buf.Bytes()
 }
 
 
@@ -48,11 +58,6 @@ func FromBytesBuffer(input_buf bytes.Buffer) *Blocks {
 
 func Equal(a *Blocks, b *Blocks) bool {
   return bytes.Equal(a.buf.Bytes(), b.buf.Bytes())
-}
-
-
-func (b *Blocks) AppendBytes(buf []byte) {
-  b.buf.Write(buf)
 }
 
 
