@@ -9,26 +9,32 @@ import "encoding/base64"
 import "bytes"
 import "fmt"
 
+
 type blocks struct {
   block_size int
   buf bytes.Buffer
 }
 
+
 func NewBlocks() *blocks {
   return &blocks{block_size: 16}
 }
+
 
 func FromBytes(input_buf []byte) *blocks {
   return &blocks{block_size: 16, buf: *bytes.NewBuffer(input_buf)}
 }
 
+
 func FromBytesBuffer(input_buf bytes.Buffer) *blocks {
   return &blocks{block_size: 16, buf: input_buf}
 }
 
+
 func Equal(a *blocks, b *blocks) bool {
   return bytes.Equal(a.buf.Bytes(), b.buf.Bytes())
 }
+
 
 func FromHex(encoded_hex string) *blocks {
   encoded_runes := []rune(encoded_hex)
@@ -52,6 +58,7 @@ func FromHex(encoded_hex string) *blocks {
   return FromBytesBuffer(decoded)
 }
 
+
 func (b* blocks) ToHex() string {
   var encoded bytes.Buffer
   for _, in_byte := range b.buf.Bytes() {
@@ -60,6 +67,7 @@ func (b* blocks) ToHex() string {
   }
   return string(encoded.String())
 }
+
 
 func nibble_to_hex_string(value byte) string {
   if value < 10 {
@@ -71,6 +79,7 @@ func nibble_to_hex_string(value byte) string {
   }
 }
 
+
 func hex_char_to_byte(value rune) byte {
   if value >= '0' && value <= '9' {
     return byte(value - '0')
@@ -80,6 +89,7 @@ func hex_char_to_byte(value rune) byte {
     panic(fmt.Sprintf("Rune %q is invalid as hex.", value))
   }
 }
+
 
 func to_base64_char(value byte) string {
   i := value
@@ -105,6 +115,7 @@ func to_base64_char(value byte) string {
         value, value, i))
   }
 }
+
 
 func (b *blocks) ToBase64() string {
   output_char_index := 5
@@ -138,6 +149,7 @@ func (b *blocks) ToBase64() string {
   }
   return encoded.String()
 }
+
 
 func FromBase64(encoded string) *blocks {
   data, err := base64.StdEncoding.DecodeString(encoded)
