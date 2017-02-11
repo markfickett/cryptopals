@@ -19,6 +19,26 @@ func TestDecryptSingleByteXor(t *testing.T) {
 }
 
 
+func TestDecryptSingleByteXorPunctuation(t *testing.T) {
+  cipher_text := "1a531a5f7e495f4e30305f4e4e561a4f435c1a30565b4e5b5b1a1a5f715" +
+      "6555b1a1a1a4e1d554e1a4f551a575d5b5f53434f4a531a551d1a554d495b5f1d4f165" +
+      "45e5b1a1a5f5b541a5f545e491a541a54521a1a53521a521a541a521a4f534f431a5600"
+  cipher_text_blocks := blocks.FromHex(cipher_text)
+  _, key, clear_text := XorDecrypt(cipher_text_blocks)
+  expected_key := byte(':')
+  if key != expected_key {
+    t.Error(fmt.Sprintf(
+        "Key should be %s/0x%x (cleartext %q) but got %s/0x%x (cleartext %q)",
+        string(expected_key),
+        expected_key,
+        cipher_text_blocks.Xor(blocks.FromByte(expected_key)).ToString(),
+        string(key),
+        key,
+        clear_text))
+  }
+}
+
+
 func TestScore(t *testing.T) {
   non_english := "iU\x1chkZHXPIK\x16tXKAnQWs\x1bAD>XtbxIK"
   bad_score := GetScore(non_english)

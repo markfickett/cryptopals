@@ -5,7 +5,6 @@
 
 package xor_crypt
 
-import "log"
 import "math"
 
 import "../blocks"
@@ -19,9 +18,12 @@ func GetScore(text string) int {
   score := 0
   for _, c := range text {
     if c >= 'a' && c <= 'z' {
-      score += 2
+      score += 3
     }
     if c >= 'A' && c <= 'Z' {
+      score += 2
+    }
+    if c == ' ' || c == '\'' || c == '\n' || c == ',' || c == '-' {
       score += 1
     }
   }
@@ -83,7 +85,7 @@ func FindKeySize(cipher_text *blocks.Blocks) int {
         best_size = size
       }
     }
-    log.Printf("key size %d\tdistance %f%s\n", size, avg_dist, debug_tag)
+    //log.Printf("key size %d\tdistance %f%s\n", size, avg_dist, debug_tag)
   }
   return best_size
 }
