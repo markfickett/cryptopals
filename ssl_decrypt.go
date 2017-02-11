@@ -33,10 +33,7 @@ func main() {
     cipher_text = blocks.FromBase64("WVmOEnGj4iK3UDEZVvVYZw==")  // "test"
     log.Printf("Decoding sample: %q\n", cipher_text.ToBase64())
   } else {
-    scanner := bufio.NewScanner(os.Stdin)
-    for scanner.Scan() {
-      cipher_text.Append(blocks.FromBase64(scanner.Text()))
-    }
+    cipher_text := blocks.FromBase64Stream(os.Stdin)
   }
 
   key := []byte("YELLOW SUBMARINE")

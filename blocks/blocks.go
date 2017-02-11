@@ -6,8 +6,10 @@
 package blocks
 
 import "encoding/base64"
+import "bufio"
 import "bytes"
 import "fmt"
+import "io"
 import "math"
 
 
@@ -252,6 +254,16 @@ func FromBase64(encoded string) *Blocks {
     panic(err)
   }
   return FromBytes(data)
+}
+
+
+func FromBase64Stream(input_stream io.Reader) *Blocks {
+  cipher_text := New()
+  scanner := bufio.NewScanner(input_stream)
+  for scanner.Scan() {
+    cipher_text.Append(FromBase64(scanner.Text()))
+  }
+  return cipher_text
 }
 
 
