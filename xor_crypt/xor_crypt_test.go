@@ -49,3 +49,19 @@ func TestEncrypt(t *testing.T) {
         key, clear_text, cipher_hex, expected_hex))
   }
 }
+
+
+func TestFindKeySize(t *testing.T) {
+  clear_text := blocks.FromString(
+      "The moving finger writes, and having writ, moves on --\n" +
+      "nor all your piety, nor wit, wash out a word of it,\n" +
+      "nor all your tears wash out a word of it.")
+
+  key := blocks.FromString("KAYaM")
+  cipher_text := clear_text.Xor(key)
+  key_size := FindKeySize(cipher_text)
+  if key_size != key.Len() {
+    t.Error(fmt.Sprintf(
+        "Expected key size %d but got %d.", key.Len(), key_size))
+  }
+}

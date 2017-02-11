@@ -5,6 +5,9 @@
 
 package xor_crypt
 
+import "log"
+import "math"
+
 import "../blocks"
 
 
@@ -45,4 +48,40 @@ func XorDecrypt(cipher_text *blocks.Blocks) (int, byte, string) {
     }
   }
   return max_score, best_key, clear_text
+}
+
+
+func FindKeySize(cipher_text *blocks.Blocks) int {
+  b := cipher_text.Copy()
+  shortest := math.Inf(1)
+  best_size := 0
+  for size := 2; size < 40; size++ {
+    b.SetBlockSize(size)
+    num_blocks := b.NumBlocks()
+    total_dist := 0
+    comparisons := 0
+    for i := 0; i < num_blocks - 1; i++ {
+      for j := i + 1; j < num_blocks; j++ {
+        other_block := b.Block(j)
+        if other_block.Len() != size {
+          continue  // incomplete final block at this size
+        }
+        total_dist += b.Block(i).HammingDistance(other_block) / size
+        comparisons++
+      }
+    }
+    avg_dist := float64(total_dist) / float64(comparisons)
+    debug_tag := ""
+    if avg_dist < shortest {
+      if best_size > 0 && size % best_size == 0 {
+        debug_tag += " x"
+      } else {
+        debug_tag += " *"
+        shortest = avg_dist
+        best_size = size
+      }
+    }
+    log.Printf("key size %d\tdistance %f%s\n", size, avg_dist, debug_tag)
+  }
+  return best_size
 }
