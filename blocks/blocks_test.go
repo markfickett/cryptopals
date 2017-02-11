@@ -68,3 +68,47 @@ func TestHammingDistance(t *testing.T) {
         "Hamming Distance is %d but got %d.", expected_dist, dist))
   }
 }
+
+
+func TestGetBlock(t *testing.T) {
+  block_size := 4
+  expected_num_blocks := 5
+  b := FromString("abcdABCDqrstQRSTwx")
+  b.SetBlockSize(block_size)
+  if b.NumBlocks() != expected_num_blocks {
+    t.Error(fmt.Sprintf(
+        "%q in blocks of 4 should have %d blocks, reports %d.",
+        b.ToString(), block_size, expected_num_blocks, b.NumBlocks()))
+  }
+  for i, expected_block := range [...]string{
+      "abcd", "ABCD", "qrst", "QRST", "wx"} {
+    extracted := b.Block(i).ToString()
+    if extracted != expected_block {
+      t.Error(fmt.Sprintf(
+          "%q block %d should be %q but got %q",
+          b.ToString(), i, expected_block, extracted))
+    }
+  }
+}
+
+
+func TestTranspose(t *testing.T) {
+  block_size := 4
+  input := FromString("abcdABCDqrstQRSTwx")
+  input.SetBlockSize(block_size)
+  output := input.Transposed()
+  if output.NumBlocks() != block_size {
+    t.Error(fmt.Sprintf(
+        "transposition should have %d blocks, reports %d.",
+        block_size, output.NumBlocks()))
+  }
+  for i, expected_block := range [...]string{
+      "aAqQw", "bBrRx", "cCsS\x00", "dDtT\x00"} {
+    extracted := output.Block(i).ToString()
+    if extracted != expected_block {
+      t.Error(fmt.Sprintf(
+          "%q block %d should be %q but got %q",
+          output.ToString(), i, expected_block, extracted))
+    }
+  }
+}

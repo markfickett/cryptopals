@@ -8,6 +8,7 @@ package blocks
 import "encoding/base64"
 import "bytes"
 import "fmt"
+import "math"
 
 
 type Blocks struct {
@@ -239,4 +240,62 @@ func FromBase64(encoded string) *Blocks {
     panic(err)
   }
   return FromBytes(data)
+}
+
+
+func (b *Blocks) SetBlockSize(new_block_size int) {
+  b.block_size = new_block_size
+}
+
+
+func (b *Blocks) NumBlocks() int {
+  return int(math.Ceil(float64(b.buf.Len()) / float64(b.block_size)))
+}
+
+
+/**
+ * Returns one block (by index) from this Blocks, wrapped in a new Blocks.
+ * This does no padding, so the last block may be less the block_size long.
+ */
+func (b *Blocks) Block(i int) *Blocks {
+  if i >= b.NumBlocks() {
+    panic(fmt.Sprintf(
+        "Cannot get block %d >= %d (for %d bytes).",
+        i, b.NumBlocks(), b.buf.Len()))
+  }
+  start := b.block_size * i
+  end := b.block_size * (i + 1)
+  if end >= b.buf.Len() {  // go has no integer min
+    end = b.buf.Len()
+  }
+  extracted := FromBytes(b.buf.Bytes()[start:end])
+  extracted.block_size = b.block_size
+  return extracted
+}
+
+
+/**
+ * Returns a transposed copy of these Blocks. The first block of the returned
+ * Blocks will have the first byte of each of the original blocks, and so on.
+ *
+ * If these Blocks' last block is not filled (total length is not a multiple of
+ * block_size), missing data is replaced by null bytes (0x00).
+ */
+func (b *Blocks) Transposed() *Blocks {
+  var transposed_bytes bytes.Buffer
+  data_bytes := b.buf.Bytes()
+  num_blocks := b.NumBlocks()
+  for block_pos := 0; block_pos < b.block_size; block_pos++ {
+    for block_num := 0; block_num < num_blocks; block_num++ {
+      input_i := block_num * b.block_size + block_pos
+      if input_i < len(data_bytes) {
+        transposed_bytes.WriteByte(data_bytes[input_i])
+      } else {
+        transposed_bytes.WriteByte(0x0)
+      }
+    }
+  }
+  transposed_blocks := FromBytesBuffer(transposed_bytes)
+  transposed_blocks.SetBlockSize(b.NumBlocks())
+  return transposed_blocks
 }
