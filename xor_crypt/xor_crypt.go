@@ -74,6 +74,8 @@ func FindKeySize(cipher_text *blocks.Blocks) int {
     debug_tag := ""
     if avg_dist < shortest {
       if best_size > 0 && size % best_size == 0 {
+        // Multiples of the real key size also appear as good solutions.
+        // Exclude them. (Mostly relevant with short keys.)
         debug_tag += " x"
       } else {
         debug_tag += " *"
