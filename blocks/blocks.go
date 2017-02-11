@@ -22,8 +22,20 @@ func New() *Blocks {
 }
 
 
+func (b *Blocks) Copy() *Blocks {
+  cp := FromBytes(b.buf.Bytes())
+  cp.block_size = b.block_size
+  return cp
+}
+
+
 func (b *Blocks) Append(other *Blocks) {
   b.buf.Write(other.buf.Bytes())
+}
+
+
+func (b *Blocks) Len() int {
+  return b.buf.Len()
 }
 
 
