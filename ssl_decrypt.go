@@ -13,7 +13,6 @@
 
 package main
 
-import "bufio"
 import "log"
 import "os"
 
@@ -33,7 +32,7 @@ func main() {
     cipher_text = blocks.FromBase64("WVmOEnGj4iK3UDEZVvVYZw==")  // "test"
     log.Printf("Decoding sample: %q\n", cipher_text.ToBase64())
   } else {
-    cipher_text := blocks.FromBase64Stream(os.Stdin)
+    cipher_text = blocks.FromBase64Stream(os.Stdin)
   }
 
   key := []byte("YELLOW SUBMARINE")
