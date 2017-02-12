@@ -133,6 +133,24 @@ func (b* Blocks) HammingDistance(other* Blocks) int {
 }
 
 
+func (b* Blocks) GetAverageHammingDistance() float64 {
+  num_blocks := b.NumBlocks()
+  total_dist := 0
+  comparisons := 0
+  for i := 0; i < num_blocks - 1; i++ {
+    for j := i + 1; j < num_blocks; j++ {
+      other_block := b.Block(j)
+      if other_block.Len() != b.block_size {
+        continue  // incomplete final block at this size
+      }
+      total_dist += b.Block(i).HammingDistance(other_block) / b.block_size
+      comparisons++
+    }
+  }
+  return float64(total_dist) / float64(comparisons)
+}
+
+
 func FromHex(encoded_hex string) *Blocks {
   encoded_runes := []rune(encoded_hex)
   var decoded bytes.Buffer
