@@ -26,7 +26,6 @@ func main() {
   }
   key := blocks.FromBytesBuffer(key_buf)
   log.Printf("Full key: %q\n", key.ToString())
-  key = blocks.FromString("Terminator X: Bring the noise")
   plain_text := cipher_text.Xor(key)
   log.Printf("Decrypted text:\n%s\n", plain_text.ToString())
 }
