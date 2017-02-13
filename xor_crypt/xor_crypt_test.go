@@ -1,6 +1,5 @@
 package xor_crypt
 
-import "fmt"
 import "strings"
 import "testing"
 
@@ -12,9 +11,9 @@ func TestDecryptSingleByteXor(t *testing.T) {
   _, _, clear_text := XorDecrypt(blocks.FromHex(cipher_text))
   expected_word := "bacon"
   if !strings.Contains(clear_text, expected_word) {
-    t.Error(fmt.Sprintf(
+    t.Errorf(
         "Sample text should have %q in it, but decrypted as %q.",
-        expected_word, clear_text))
+        expected_word, clear_text)
   }
 }
 
@@ -27,14 +26,14 @@ func TestDecryptSingleByteXorPunctuation(t *testing.T) {
   _, key, clear_text := XorDecrypt(cipher_text_blocks)
   expected_key := byte(':')
   if key != expected_key {
-    t.Error(fmt.Sprintf(
+    t.Errorf(
         "Key should be %s/0x%x (cleartext %q) but got %s/0x%x (cleartext %q)",
         string(expected_key),
         expected_key,
         cipher_text_blocks.Xor(blocks.FromByte(expected_key)).ToString(),
         string(key),
         key,
-        clear_text))
+        clear_text)
   }
 }
 
@@ -45,9 +44,9 @@ func TestScore(t *testing.T) {
   english := "Now that the party is jumping\n"
   good_score := GetScore(english)
   if bad_score >= good_score {
-    t.Error(fmt.Sprintf(
+    t.Errorf(
         "bad %q scored %d >= good %q which scored %d",
-        bad_score, non_english, good_score, english))
+        bad_score, non_english, good_score, english)
   }
 }
 
@@ -64,9 +63,9 @@ func TestEncrypt(t *testing.T) {
   cipher_text := blocks.FromString(clear_text).Xor(blocks.FromString(key))
   cipher_hex := cipher_text.ToHex()
   if cipher_hex != expected_hex {
-    t.Error(fmt.Sprintf(
+    t.Errorf(
         "%q ^ %q encrypted as %q, should be %q",
-        key, clear_text, cipher_hex, expected_hex))
+        key, clear_text, cipher_hex, expected_hex)
   }
 }
 
@@ -81,7 +80,6 @@ func TestFindKeySize(t *testing.T) {
   cipher_text := clear_text.Xor(key)
   key_size := FindKeySize(cipher_text)
   if key_size != key.Len() {
-    t.Error(fmt.Sprintf(
-        "Expected key size %d but got %d.", key.Len(), key_size))
+    t.Errorf("Expected key size %d but got %d.", key.Len(), key_size)
   }
 }

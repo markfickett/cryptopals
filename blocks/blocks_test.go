@@ -1,6 +1,5 @@
 package blocks
 
-import "fmt"
 import "testing"
 
 
@@ -9,7 +8,7 @@ func TestBase64EncodeAligned(t *testing.T) {
   actual_b64 := FromBytes([]byte{0x4d, 0x61, 0x6e}).ToBase64()
   expected_b64 := "TWFu"
   if actual_b64 != expected_b64 {
-    t.Error(fmt.Sprintf("expected %q but got %q", expected_b64, actual_b64))
+    t.Errorf("expected %q but got %q", expected_b64, actual_b64)
   }
 }
 
@@ -18,7 +17,7 @@ func TestBase64EncodPadded(t *testing.T) {
   actual_b64 := FromBytes([]byte{0x4d, 0x61}).ToBase64()
   expected_b64 := "TWE="
   if actual_b64 != expected_b64 {
-    t.Error(fmt.Sprintf("expected %q but got %q", expected_b64, actual_b64))
+    t.Errorf("expected %q but got %q", expected_b64, actual_b64)
   }
 }
 
@@ -28,9 +27,9 @@ func TestBase64RoundTrip(t *testing.T) {
   encoded := start.ToBase64()
   decoded := FromBase64(encoded)
   if !Equal(decoded, start) {
-    t.Error(fmt.Sprintf(
+    t.Errorf(
         "input %q became %q doesn't match output %q",
-        start.buf.String(), encoded, decoded.buf.String()))
+        start.buf.String(), encoded, decoded.buf.String())
   }
 }
 
@@ -42,7 +41,7 @@ func TestHexDecode(t *testing.T) {
       "hyb29t"
   actual_b64 := FromHex(input_hex).ToBase64()
   if actual_b64 != expected_b64 {
-    t.Error(fmt.Sprintf("expected %q but got %q.", expected_b64, actual_b64))
+    t.Errorf("expected %q but got %q.", expected_b64, actual_b64)
   }
 }
 
@@ -54,7 +53,7 @@ func TestXor(t *testing.T) {
 
   actual := FromHex(a).Xor(FromHex(b)).ToHex()
   if expected != actual {
-    t.Error(fmt.Sprintf("%s ^ %s = %s but got %s", a, b, expected, actual))
+    t.Errorf("%s ^ %s = %s but got %s", a, b, expected, actual)
   }
 }
 
@@ -64,8 +63,8 @@ func TestHammingDistance(t *testing.T) {
       FromString("wokka wokka!!!"))
   expected_dist := 37
   if dist != expected_dist {
-    t.Error(fmt.Sprintf(
-        "Hamming Distance is %d but got %d.", expected_dist, dist))
+    t.Errorf(
+        "Hamming Distance is %d but got %d.", expected_dist, dist)
   }
 }
 
@@ -76,17 +75,17 @@ func TestGetBlock(t *testing.T) {
   b := FromString("abcdABCDqrstQRSTwx")
   b.SetBlockSize(block_size)
   if b.NumBlocks() != expected_num_blocks {
-    t.Error(fmt.Sprintf(
+    t.Errorf(
         "%q in blocks of 4 should have %d blocks, reports %d.",
-        b.ToString(), block_size, expected_num_blocks, b.NumBlocks()))
+        b.ToString(), block_size, expected_num_blocks, b.NumBlocks())
   }
   for i, expected_block := range [...]string{
       "abcd", "ABCD", "qrst", "QRST", "wx"} {
     extracted := b.Block(i).ToString()
     if extracted != expected_block {
-      t.Error(fmt.Sprintf(
+      t.Errorf(
           "%q block %d should be %q but got %q",
-          b.ToString(), i, expected_block, extracted))
+          b.ToString(), i, expected_block, extracted)
     }
   }
 }
@@ -111,17 +110,17 @@ func TestTranspose(t *testing.T) {
   input.SetBlockSize(block_size)
   output := input.Transposed()
   if output.NumBlocks() != block_size {
-    t.Error(fmt.Sprintf(
+    t.Errorf(
         "transposition should have %d blocks, reports %d.",
-        block_size, output.NumBlocks()))
+        block_size, output.NumBlocks())
   }
   for i, expected_block := range [...]string{
       "aAqQw", "bBrRx", "cCsS\x00", "dDtT\x00"} {
     extracted := output.Block(i).ToString()
     if extracted != expected_block {
-      t.Error(fmt.Sprintf(
+      t.Errorf(
           "%q block %d should be %q but got %q",
-          output.ToString(), i, expected_block, extracted))
+          output.ToString(), i, expected_block, extracted)
     }
   }
 }
