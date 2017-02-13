@@ -6,8 +6,6 @@
  * Decrypting, OpenSSL ignores \n in base64'd input. The hex key is
  * ''.join('%x' % ord(c) for c in 'YELLOW SUBMARINE').
  *
- * https://sosedoff.com/2015/05/22/data-encryption-in-go-using-openssl.html
- *
  * https://cryptopals.com/sets/1/challenges/7
  */
 
@@ -16,51 +14,16 @@ package main
 import "log"
 import "os"
 
-// Use "go get <imported path below>" to fetch the library.
-import "github.com/spacemonkeygo/openssl"
-
 import "./blocks"
+import "./ssl"
 
 
 func main() {
-  if len(os.Args) > 2 || (len(os.Args) == 2 && os.Args[1] != "test") {
-    log.Fatalf("Usage: %s [test|< input_base64.txt]", os.Args[0])
+  if len(os.Args) != 2 {
+    log.Fatalf("Usage: %s key < input_base64.txt", os.Args[0])
   }
-
-  cipher_text := blocks.New()
-  if len(os.Args) == 2 {
-    cipher_text = blocks.FromBase64("WVmOEnGj4iK3UDEZVvVYZw==")  // "test"
-    log.Printf("Decoding sample: %q\n", cipher_text.ToBase64())
-  } else {
-    cipher_text = blocks.FromBase64Stream(os.Stdin)
-  }
-
-  key := []byte("YELLOW SUBMARINE")
-
-  cipher, err := openssl.GetCipherByName("aes-128-ecb")
-  if err != nil {
-    panic("Unable to find cipher!")
-  }
-  ctx, err := openssl.NewDecryptionCipherCtx(
-      cipher,
-      nil,  // no engine
-      key,
-      nil)  // no initialization vector
-  if err != nil {
-    panic("Unable to create context for encryption!")
-  }
-
-  plaintext, err := ctx.DecryptUpdate(cipher_text.ToBytes())
-  if err != nil {
-    log.Printf("Initial decryption failed: %q", err)
-    panic(err)
-  }
-  finalplaintext, err := ctx.DecryptFinal()
-  if err != nil {
-    log.Printf("Final decryption failed: %q", err)
-    panic(err)
-  }
-  plaintext = append(plaintext, finalplaintext...)
-
-  log.Printf("Decoded as:\n%s\n", plaintext)
+  cipher_text := blocks.FromBase64Stream(os.Stdin)
+  key := blocks.FromString(os.Args[1])
+  plaintext := ssl.EcbDecrypt(cipher_text, key)
+  log.Printf("Decoded as:\n%s\n", plaintext.ToString())
 }
