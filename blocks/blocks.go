@@ -316,6 +316,16 @@ func (b *Blocks) Block(i int) *Blocks {
 }
 
 
+/** Returns one block, padded if necessary with 0x04 (PKCS#7 padding). */
+func (b *Blocks) BlockPadded(i int) *Blocks {
+  extracted := b.Block(i)
+  for extracted.buf.Len() < extracted.block_size {
+    extracted.buf.WriteByte(0x04)
+  }
+  return extracted
+}
+
+
 /**
  * Returns a transposed copy of these Blocks. The first block of the returned
  * Blocks will have the first byte of each of the original blocks, and so on.

@@ -92,6 +92,19 @@ func TestGetBlock(t *testing.T) {
 }
 
 
+func TestGetBlockPadded(t *testing.T) {
+  b := FromString("YELLOW SUBMARINE")
+  b.SetBlockSize(20)
+  padded := b.BlockPadded(0)
+  expected := "YELLOW SUBMARINE\x04\x04\x04\x04"
+  if padded.ToString() != expected {
+    t.Errorf(
+        "Padded %q should be %q but got %q.",
+        b.ToString(), expected, padded.ToString())
+  }
+}
+
+
 func TestTranspose(t *testing.T) {
   block_size := 4
   input := FromString("abcdABCDqrstQRSTwx")
