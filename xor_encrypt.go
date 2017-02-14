@@ -17,14 +17,6 @@ func main() {
     log.Fatalf("Usage: %s key < input_lines.txt", os.Args[0])
   }
   key := blocks.FromString(os.Args[1])
-  text := blocks.New()
-
-  buf := make([]byte, 16)
-  reader := io.Reader(os.Stdin)
-  n, _ := io.ReadFull(reader, buf)
-  for n > 0 {
-    text.AppendBytes(buf[:n])
-    n, _ = io.ReadFull(reader, buf)
-  }
+  text := blocks.FromStringStream(os.Stdin)
   log.Printf("%s\n", text.Xor(key).ToHex())
 }

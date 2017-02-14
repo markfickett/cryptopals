@@ -285,6 +285,18 @@ func FromBase64Stream(input_stream io.Reader) *Blocks {
 }
 
 
+func FromStringStream(input_stream io.Reader) *Blocks {
+  clear_text := New()
+  buf := make([]byte, 16)
+  n, _ := io.ReadFull(input_stream, buf)
+  for n > 0 {
+    clear_text.AppendBytes(buf[:n])
+    n, _ = io.ReadFull(input_stream, buf)
+  }
+  return clear_text
+}
+
+
 func (b *Blocks) SetBlockSize(new_block_size int) {
   b.block_size = new_block_size
 }
