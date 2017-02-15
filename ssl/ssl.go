@@ -24,7 +24,7 @@ func EcbDecrypt(cipher_text *blocks.Blocks, key *blocks.Blocks) *blocks.Blocks {
       key.ToBytes(),
       nil)  // no initialization vector
   if err != nil {
-    panic("Unable to create context for decryption!")
+    panic(err)
   }
 
   clear_text, err := ctx.DecryptUpdate(cipher_text.ToBytes())
@@ -50,7 +50,7 @@ func EcbEncrypt(clear_text *blocks.Blocks, key *blocks.Blocks) *blocks.Blocks {
       key.ToBytes(),
       nil)  // no initialization vector
   if err != nil {
-    panic("Unable to create context for encryption!")
+    panic(err)
   }
 
   cipher_text, err := ctx.EncryptUpdate(clear_text.ToBytes())
