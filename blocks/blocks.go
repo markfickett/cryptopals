@@ -319,7 +319,7 @@ func (b *Blocks) NumBlocks() int {
 func (b *Blocks) Block(i int) *Blocks {
   if i >= b.NumBlocks() {
     panic(fmt.Sprintf(
-        "Cannot get block %d >= %d (for %d bytes).",
+        "Cannot get block %d >= block count %d (for %d bytes).",
         i, b.NumBlocks(), b.buf.Len()))
   }
   start := b.block_size * i
