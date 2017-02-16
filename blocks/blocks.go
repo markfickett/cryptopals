@@ -297,6 +297,11 @@ func FromStringStream(input_stream io.Reader) *Blocks {
 }
 
 
+func (b *Blocks) BlockSize() int {
+  return b.block_size
+}
+
+
 func (b *Blocks) SetBlockSize(new_block_size int) {
   b.block_size = new_block_size
 }
