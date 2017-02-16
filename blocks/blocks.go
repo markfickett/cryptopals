@@ -276,24 +276,24 @@ func FromBase64(encoded string) *Blocks {
 
 
 func FromBase64Stream(input_stream io.Reader) *Blocks {
-  cipher_text := New()
+  text := New()
   scanner := bufio.NewScanner(input_stream)
   for scanner.Scan() {
-    cipher_text.Append(FromBase64(scanner.Text()))
+    text.Append(FromBase64(scanner.Text()))
   }
-  return cipher_text
+  return text
 }
 
 
 func FromStringStream(input_stream io.Reader) *Blocks {
-  clear_text := New()
+  text := New()
   buf := make([]byte, 16)
   n, _ := io.ReadFull(input_stream, buf)
   for n > 0 {
-    clear_text.AppendBytes(buf[:n])
+    text.AppendBytes(buf[:n])
     n, _ = io.ReadFull(input_stream, buf)
   }
-  return clear_text
+  return text
 }
 
 

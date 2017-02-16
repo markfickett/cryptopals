@@ -27,12 +27,12 @@ func main() {
   }
   key := blocks.FromString(flag.Args()[0])
   if *decrypt_ptr {
-    cipher_text := blocks.FromBase64Stream(os.Stdin)
-    clear_text := ssl.EcbDecrypt(cipher_text, key)
-    log.Printf("Decrypted:\n%s\n", clear_text.ToString())
+    ciphertext := blocks.FromBase64Stream(os.Stdin)
+    plaintext := ssl.EcbDecrypt(ciphertext, key)
+    log.Printf("Decrypted:\n%s\n", plaintext.ToString())
   } else {
-    clear_text := blocks.FromStringStream(os.Stdin)
-    cipher_text := ssl.EcbEncrypt(clear_text, key)
-    log.Printf("Encrypted:\n%s\n", cipher_text.ToBase64())
+    plaintext := blocks.FromStringStream(os.Stdin)
+    ciphertext := ssl.EcbEncrypt(plaintext, key)
+    log.Printf("Encrypted:\n%s\n", ciphertext.ToBase64())
   }
 }

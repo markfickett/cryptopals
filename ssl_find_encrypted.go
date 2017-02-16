@@ -22,21 +22,21 @@ func main() {
   line_num := 1
   min_dist := math.Inf(1)
   min_line := -1
-  min_cipher_text := ""
+  min_ciphertext := ""
   for scanner.Scan() {
-    data_buf := blocks.FromHex(scanner.Text())
-    dist := data_buf.GetAverageHammingDistance()
+    ciphertext := blocks.FromHex(scanner.Text())
+    dist := ciphertext.GetAverageHammingDistance()
     annotation := ""
     if dist < min_dist {
       min_dist = dist
       annotation = " *"
       min_line = line_num
-      min_cipher_text = data_buf.ToBase64()
+      min_ciphertext = ciphertext.ToBase64()
     }
     log.Printf("line %d\tavg distance %f%s", line_num, dist, annotation)
     line_num++
   }
   log.Printf(
       "Line %d had minimum inter-block Hamming distance %f.\n%q\n",
-      min_line, min_dist, min_cipher_text)
+      min_line, min_dist, min_ciphertext)
 }

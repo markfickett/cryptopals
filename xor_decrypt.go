@@ -28,13 +28,13 @@ func main() {
   scanner := bufio.NewScanner(os.Stdin)
   line_num := 1
   for scanner.Scan() {
-    score, key, clear_text := xor_crypt.XorDecrypt(
+    score, key, plaintext := xor_crypt.XorDecrypt(
         blocks.FromHex(scanner.Text()))
     if score > max_score {
       best_line_num = line_num
       max_score = score
       best_key = key
-      best_text = clear_text
+      best_text = plaintext
     }
     line_num++
   }

@@ -6,22 +6,22 @@ import "../blocks"
 
 
 func TestEcbRoundTrip(t *testing.T) {
-  expected_clear_text := blocks.FromString("pumpkin patch U!")
-  expected_cipher_text := blocks.FromBase64("gY0wCsoqhcmxyNhqH6YE3w==")
+  expected_cleartext := blocks.FromString("pumpkin patch U!")
+  expected_ciphertext := blocks.FromBase64("gY0wCsoqhcmxyNhqH6YE3w==")
   key := blocks.FromString("YELLOW SUBMARINE")
 
-  clear_text := EcbDecrypt(expected_cipher_text, key)
-  if clear_text.ToString() != expected_clear_text.ToString() {
+  cleartext := EcbDecrypt(expected_ciphertext, key)
+  if cleartext.ToString() != expected_cleartext.ToString() {
     t.Errorf(
         "Expected decryption as %q, but got %q.",
-        expected_clear_text.ToString(), clear_text.ToString())
+        expected_cleartext.ToString(), cleartext.ToString())
   }
 
-  cipher_text := EcbEncrypt(expected_clear_text, key)
-  if cipher_text.ToBase64() != expected_cipher_text.ToBase64() {
+  ciphertext := EcbEncrypt(expected_cleartext, key)
+  if ciphertext.ToBase64() != expected_ciphertext.ToBase64() {
     t.Errorf(
         "Expected encryption as %q, but got %q.",
-        expected_cipher_text.ToBase64(), cipher_text.ToBase64())
+        expected_ciphertext.ToBase64(), ciphertext.ToBase64())
   }
 }
 
@@ -42,21 +42,21 @@ func TestEcbSize(t *testing.T) {
 
 func TestCbcRoundTrip(t *testing.T) {
   iv := blocks.FromString("YELLOW SUBMARINE")
-  expected_clear_text := blocks.FromString("PUMPKIN PIE BOWL")
-  expected_cipher_text := blocks.FromBase64("oJz6RDQ/SW+QKkYsdULvcg==")
+  expected_cleartext := blocks.FromString("PUMPKIN PIE BOWL")
+  expected_ciphertext := blocks.FromBase64("oJz6RDQ/SW+QKkYsdULvcg==")
   key := blocks.FromString("YELLOW SUBMARINE")
 
-  cipher_text := CbcEncrypt(expected_clear_text, key, iv)
-  if cipher_text.ToBase64() != expected_cipher_text.ToBase64() {
+  ciphertext := CbcEncrypt(expected_cleartext, key, iv)
+  if ciphertext.ToBase64() != expected_ciphertext.ToBase64() {
     t.Errorf(
         "Expected encryption as %q, but got %q.",
-        expected_cipher_text.ToBase64(), cipher_text.ToBase64())
+        expected_ciphertext.ToBase64(), ciphertext.ToBase64())
   }
 
-  clear_text := CbcDecrypt(cipher_text, key, iv)
-  if clear_text.ToString() != expected_clear_text.ToString() {
+  cleartext := CbcDecrypt(ciphertext, key, iv)
+  if cleartext.ToString() != expected_cleartext.ToString() {
     t.Errorf(
         "Expected decryption as %q, but got %q.",
-        expected_clear_text.ToString(), clear_text.ToString())
+        expected_cleartext.ToString(), cleartext.ToString())
   }
 }

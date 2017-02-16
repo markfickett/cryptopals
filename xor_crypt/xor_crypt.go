@@ -11,8 +11,7 @@ import "../blocks"
 
 
 /**
- * Returns a score for some text for how likely it is to be English clear text.
- * The score is the number of Latin letters in the string.
+ * Returns a score for some text for how likely it is to be English cleartext.
  */
 func GetScore(text string) int {
   score := 0
@@ -36,25 +35,25 @@ func GetScore(text string) int {
  * byte key to XOR text, and tries all single-byte keys to find the best scoring
  * decryption.
  */
-func XorDecrypt(cipher_text *blocks.Blocks) (int, byte, string) {
-  clear_text := ""
+func XorDecrypt(ciphertext *blocks.Blocks) (int, byte, string) {
+  cleartext := ""
   max_score := 0
   var best_key byte = 0x0
   for key := 0x0; key < (0x1 << 8); key++ {
-    decrypted_text := cipher_text.Xor(blocks.FromByte(byte(key))).ToString()
-    score := GetScore(decrypted_text)
+    plaintext := ciphertext.Xor(blocks.FromByte(byte(key))).ToString()
+    score := GetScore(plaintext)
     if score > max_score {
       max_score = score
       best_key = byte(key)
-      clear_text = decrypted_text
+      cleartext = plaintext
     }
   }
-  return max_score, best_key, clear_text
+  return max_score, best_key, cleartext
 }
 
 
-func FindKeySize(cipher_text *blocks.Blocks) int {
-  b := cipher_text.Copy()
+func FindKeySize(ciphertext *blocks.Blocks) int {
+  b := ciphertext.Copy()
   shortest := math.Inf(1)
   best_size := 0
   for size := 2; size < 40; size++ {

@@ -13,11 +13,11 @@ import "./xor_crypt"
 
 
 func main() {
-  cipher_text := blocks.FromBase64Stream(os.Stdin)
-  key_size := xor_crypt.FindKeySize(cipher_text)
+  ciphertext := blocks.FromBase64Stream(os.Stdin)
+  key_size := xor_crypt.FindKeySize(ciphertext)
   log.Printf("Guessed key size %d.\n", key_size)
-  cipher_text.SetBlockSize(key_size)
-  transposed := cipher_text.Transposed()
+  ciphertext.SetBlockSize(key_size)
+  transposed := ciphertext.Transposed()
   var key_buf bytes.Buffer
   for i := 0; i < key_size; i++ {
     _, key_byte, _ := xor_crypt.XorDecrypt(transposed.Block(i))
@@ -26,6 +26,6 @@ func main() {
   }
   key := blocks.FromBytesBuffer(key_buf)
   log.Printf("Full key: %q\n", key.ToString())
-  plain_text := cipher_text.Xor(key)
-  log.Printf("Decrypted text:\n%s\n", plain_text.ToString())
+  cleartext := ciphertext.Xor(key)
+  log.Printf("Decrypted text:\n%s\n", cleartext.ToString())
 }
