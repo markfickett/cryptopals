@@ -11,6 +11,7 @@ import "../blocks"
 
 /**
  * Uses the AES block cipher in ECB mode to encrypt. Pads any partial.
+ * https://cryptopals.com/sets/1/challenges/7
  * https://en.wikipedia.org/wiki/Advanced_Encryption_Standard
  */
 func EcbEncrypt(plaintext *blocks.Blocks, key *blocks.Blocks) *blocks.Blocks {

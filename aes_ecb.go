@@ -1,39 +1,70 @@
 /**
- * En/Decrypt using the AES block cipher in ECB mode. Equivalent to:
+ * En/Decrypt using the AES block cipher in ECB or CBC mode.
+ *
+ * In ECB mode, this is Equivalent to:
    KEY=59454c4c4f57205355424d4152494e45
    openssl enc -aes-128-ecb -nosalt -a -nopad -in t.txt -K $KEY -out t.txt.enc
    openssl enc -aes-128-ecb -nosalt -a -d -in t.txt.enc -K $KEY
  * Decrypting, OpenSSL ignores \n in base64'd input. The hex key is
  * ''.join('%x' % ord(c) for c in 'YELLOW SUBMARINE').
- *
- * https://cryptopals.com/sets/1/challenges/7
  */
 
 package main
 
-import "flag"
-import "log"
-import "os"
+import (
+    "log"
+    "os"
 
-import "./blocks"
-import "./aes_modes"
+    "github.com/droundy/goopt"
+
+    "./blocks"
+    "./aes_modes"
+)
 
 
 func main() {
-  decrypt_ptr := flag.Bool(
-      "d", false, "If specified, decrypt instead of encrypting.")
-  flag.Parse()
-  if len(flag.Args()) != 1 {
-    log.Fatalf("Usage: %s [-d] key < input.txt", os.Args[0])
+  var decrypt = goopt.Flag(
+      []string{"-d", "--decrypt"},
+      []string{"-e", "--encrypt"},
+      "Decrypt (instead of the default, encrypting).",
+      "Encrypt.")
+  var mode = goopt.Alternatives(
+      []string{"-m", "--mode"},
+      []string{"ecb", "cbc"},
+      "Which mode of operation to use with the block cipher.")
+  goopt.Description = func() string {
+    return "En/Decrypt using AES in different modes of operation."
   }
-  key := blocks.FromString(flag.Args()[0])
-  if *decrypt_ptr {
+  goopt.Parse(nil)
+
+  if len(goopt.Args) != 1 {
+    log.Fatalf(goopt.Synopsis())
+  }
+  key := blocks.FromString(goopt.Args[0])
+  iv := blocks.FromBytes(make([]byte, 16, 16))
+  if *decrypt {
     ciphertext := blocks.FromBase64Stream(os.Stdin)
-    plaintext := aes_modes.EcbDecrypt(ciphertext, key)
+    var plaintext *blocks.Blocks
+    switch *mode {
+    case "ecb":
+      plaintext = aes_modes.EcbDecrypt(ciphertext, key)
+    case "cbc":
+      plaintext = aes_modes.CbcDecrypt(ciphertext, key, iv)
+    default:
+      panic(mode)
+    }
     log.Printf("Decrypted:\n%s\n", plaintext.ToString())
   } else {
     plaintext := blocks.FromStringStream(os.Stdin)
-    ciphertext := aes_modes.EcbEncrypt(plaintext, key)
+    var ciphertext *blocks.Blocks
+    switch *mode {
+    case "ecb":
+      ciphertext = aes_modes.EcbEncrypt(plaintext, key)
+    case "cbc":
+      ciphertext = aes_modes.CbcEncrypt(plaintext, key, iv)
+    default:
+      panic(mode)
+    }
     log.Printf("Encrypted:\n%s\n", ciphertext.ToBase64())
   }
 }
