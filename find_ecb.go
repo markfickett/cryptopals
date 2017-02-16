@@ -1,5 +1,5 @@
 /**
- * Find which byte block is ECB-encrypted.
+ * Find which ciphertext is ECB-encrypted.
  * https://cryptopals.com/sets/1/challenges/8
  */
 

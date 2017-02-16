@@ -1,4 +1,4 @@
-package ssl
+package aes_modes
 
 import "testing"
 

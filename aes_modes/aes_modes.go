@@ -2,7 +2,7 @@
  * AES-based en/decryption modes.
  */
 
-package ssl
+package aes_modes
 
 import "crypto/aes"
 
