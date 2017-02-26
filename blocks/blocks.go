@@ -11,6 +11,10 @@ import "bytes"
 import "fmt"
 import "io"
 import "math"
+import "crypto/rand"
+
+
+const default_block_size int = 16
 
 
 type Blocks struct {
@@ -20,7 +24,7 @@ type Blocks struct {
 
 
 func New() *Blocks {
-  return &Blocks{block_size: 16}
+  return &Blocks{block_size: default_block_size}
 }
 
 
@@ -47,7 +51,9 @@ func (b *Blocks) Empty() bool {
 
 
 func FromBytes(input_buf []byte) *Blocks {
-  return &Blocks{block_size: 16, buf: *bytes.NewBuffer(input_buf)}
+  return &Blocks{
+      block_size: default_block_size,
+      buf: *bytes.NewBuffer(input_buf)}
 }
 
 
@@ -77,7 +83,19 @@ func (b *Blocks) ToString() string {
 
 
 func FromBytesBuffer(input_buf bytes.Buffer) *Blocks {
-  return &Blocks{block_size: 16, buf: input_buf}
+  return &Blocks{block_size: default_block_size, buf: input_buf}
+}
+
+
+func RandomBlock(block_size int) *Blocks {
+  buf := make([]byte, block_size)
+  _, err := rand.Read(buf)
+  if err != nil {
+    panic(err)
+  }
+  block := FromBytes(buf)
+  block.SetBlockSize(block_size)
+  return block
 }
 
 
