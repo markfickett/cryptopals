@@ -5,6 +5,10 @@
 package aes_modes
 
 import "crypto/aes"
+import "crypto/rand"
+import "fmt"
+import "log"
+import "math/big"
 
 import "../blocks"
 
@@ -20,7 +24,9 @@ func EcbEncrypt(plaintext *blocks.Blocks, key *blocks.Blocks) *blocks.Blocks {
     panic(err)
   }
   if plaintext.BlockSize() != aes.BlockSize {
-    panic("Block size mismatch.")
+    panic(fmt.Sprintf(
+        "Plaintext block size %d does not match AES block sizes %d.",
+        plaintext.BlockSize(), aes.BlockSize))
   }
   ciphertext := blocks.New()
   for i := 0; i < plaintext.NumBlocks(); i++ {
@@ -92,4 +98,39 @@ func CbcDecrypt(
     plaintext.Append(plain_block)
   }
   return plaintext
+}
+
+
+func rand_int(n int) int {
+  v, err := rand.Int(rand.Reader, big.NewInt(int64(n)))
+  if err != nil {
+    panic(err)
+  }
+  return int(v.Int64())
+}
+
+
+/**
+ * Encrypts data using CBC or ECB mode, using a random key (and IV if
+ * applicable). Pad the incoming plaintext (before and after) with 5-10 random
+ * bytes
+ */
+func RandomEncrypt(raw_plaintext *blocks.Blocks) *blocks.Blocks {
+  key := blocks.RandomBlock(aes.BlockSize)
+  plaintext := blocks.RandomBlock(5 + rand_int(5))
+  plaintext.Append(raw_plaintext)
+  plaintext.Append(blocks.RandomBlock(5 + rand_int(5)))
+  plaintext.SetBlockSize(aes.BlockSize)
+  if rand_int(2) > 0 {
+    log.Printf(
+        "Encrypting %q=>%q with ECB using %s.",
+        raw_plaintext.ToString(), plaintext.ToString(), key.ToHex())
+    return EcbEncrypt(plaintext, key)
+  } else {
+    iv := blocks.RandomBlock(aes.BlockSize)
+    log.Printf(
+        "Encrypting %q=>%q with CBC using %s and %s.",
+        raw_plaintext.ToString(), plaintext.ToString(), key.ToHex(), iv.ToHex())
+    return CbcEncrypt(plaintext, key, iv)
+  }
 }
