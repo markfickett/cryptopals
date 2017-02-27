@@ -124,3 +124,15 @@ func TestTranspose(t *testing.T) {
     }
   }
 }
+
+
+func TestSlice(t *testing.T) {
+  input := FromString("yellow submarineYELLOW SUBMARINEyellow submarine")
+  expected_sliced := FromString("marineYELLOW SUBMARINEyellow submarine")
+  sliced := input.Slice(10)
+  if expected_sliced.ToString() != sliced.ToString() {
+    t.Errorf(
+        "Expected sliced to be %q but got %q.",
+        expected_sliced.ToString(), sliced.ToString())
+  }
+}

@@ -386,3 +386,13 @@ func (b *Blocks) Transposed() *Blocks {
   transposed_blocks.SetBlockSize(b.NumBlocks())
   return transposed_blocks
 }
+
+
+/**
+ * Returns a copy of these Blocks, dropping start_index bytes from the start.
+ */
+func (b *Blocks) Slice(start_index int) *Blocks {
+  sliced := FromBytes(b.ToBytes()[start_index:])
+  sliced.SetBlockSize(b.BlockSize())
+  return sliced
+}
