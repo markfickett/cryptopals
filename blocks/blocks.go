@@ -151,9 +151,10 @@ func (b* Blocks) HammingDistance(other* Blocks) int {
 }
 
 
-func (b* Blocks) GetAverageHammingDistance() float64 {
+func (b* Blocks) GetMinimumAndAverageHammingDistance() (float64, float64) {
   num_blocks := b.NumBlocks()
-  total_dist := 0
+  min_dist := math.Inf(1)
+  total_dist := float64(0)
   comparisons := 0
   for i := 0; i < num_blocks - 1; i++ {
     for j := i + 1; j < num_blocks; j++ {
@@ -161,11 +162,16 @@ func (b* Blocks) GetAverageHammingDistance() float64 {
       if other_block.Len() != b.block_size {
         continue  // incomplete final block at this size
       }
-      total_dist += b.Block(i).HammingDistance(other_block) / b.block_size
+      dist := float64(b.Block(i).HammingDistance(other_block)) /
+          float64(b.block_size)
+      total_dist += dist
+      if dist < min_dist {
+        min_dist = dist
+      }
       comparisons++
     }
   }
-  return float64(total_dist) / float64(comparisons)
+  return min_dist, total_dist / float64(comparisons)
 }
 
 
