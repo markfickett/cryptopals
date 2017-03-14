@@ -20,23 +20,24 @@ func main() {
 
   scanner := bufio.NewScanner(os.Stdin)
   line_num := 1
-  min_dist := math.Inf(1)
+  overall_min_dist := math.Inf(1)
   min_line := -1
   min_ciphertext := ""
   for scanner.Scan() {
     ciphertext := blocks.FromHex(scanner.Text())
-    dist := ciphertext.GetAverageHammingDistance()
+    min_dist, avg_dist := ciphertext.GetMinimumAndAverageHammingDistance()
     annotation := ""
-    if dist < min_dist {
-      min_dist = dist
+    if min_dist < overall_min_dist {
+      overall_min_dist = min_dist
       annotation = " *"
       min_line = line_num
       min_ciphertext = ciphertext.ToBase64()
     }
-    log.Printf("line %d\tavg distance %f%s", line_num, dist, annotation)
+    log.Printf(
+        "line %d\tavg %f\tmin %f%s", line_num, avg_dist, min_dist, annotation)
     line_num++
   }
   log.Printf(
       "Line %d had minimum inter-block Hamming distance %f.\n%q\n",
-      min_line, min_dist, min_ciphertext)
+      min_line, overall_min_dist, min_ciphertext)
 }
