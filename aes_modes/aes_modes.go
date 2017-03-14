@@ -136,14 +136,13 @@ func RandomEncrypt(raw_plaintext *blocks.Blocks) *blocks.Blocks {
   plaintext.SetBlockSize(aes.BlockSize)
   if rand_int(2) > 0 {
     log.Printf(
-        "Encrypting %q=>%q with ECB using %s.",
-        raw_plaintext.ToString(), plaintext.ToString(), key.ToHex())
+        "Encrypting %q with ECB using %s.", plaintext.ToString(), key.ToHex())
     return EcbEncrypt(plaintext, key)
   } else {
     iv := blocks.RandomBlock(aes.BlockSize)
     log.Printf(
-        "Encrypting %q=>%q with CBC using %s and %s.",
-        raw_plaintext.ToString(), plaintext.ToString(), key.ToHex(), iv.ToHex())
+        "Encrypting %q with CBC using %s and %s.",
+        plaintext.ToString(), key.ToHex(), iv.ToHex())
     return CbcEncrypt(plaintext, key, iv)
   }
 }
