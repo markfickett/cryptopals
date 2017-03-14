@@ -32,6 +32,10 @@ func main() {
       []string{"-m", "--mode"},
       []string{"ecb", "cbc"},
       "Which mode of operation to use with the block cipher.")
+  var format = goopt.Alternatives(
+      []string{"-f", "--format"},
+      []string{"hex", "base64"},
+      "How to format the output ciphertext.")
   goopt.Description = func() string {
     return "En/Decrypt using AES in different modes of operation."
   }
@@ -63,8 +67,15 @@ func main() {
     case "cbc":
       ciphertext = aes_modes.CbcEncrypt(plaintext, key, iv)
     default:
-      panic(mode)
+      panic(*mode)
     }
-    log.Printf("Encrypted:\n%s\n", ciphertext.ToBase64())
+    switch *format {
+    case "hex":
+      log.Printf("Encrypted:\n%s\n", ciphertext.ToHex())
+    case "base64":
+      log.Printf("Encrypted:\n%s\n", ciphertext.ToBase64())
+    default:
+      panic(*format)
+    }
   }
 }
