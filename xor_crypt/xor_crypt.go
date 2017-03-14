@@ -58,7 +58,7 @@ func FindKeySize(ciphertext *blocks.Blocks) int {
   best_size := 0
   for size := 2; size < 40; size++ {
     b.SetBlockSize(size)
-    avg_dist := b.GetAverageHammingDistance()
+    _, avg_dist := b.GetMinimumAndAverageHammingDistance()
     debug_tag := ""
     if avg_dist < shortest {
       if best_size > 0 && size % best_size == 0 {
