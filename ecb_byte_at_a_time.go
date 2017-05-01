@@ -58,6 +58,20 @@ func find_block_size(bb *BlackBox) int {
 
 func main() {
   black_box := NewBlackBox()
+
   block_size := find_block_size(black_box)
   log.Printf("Found black-box encrypter's block size: %d.", block_size)
+
+  repeated_block := blocks.RandomBlock(block_size)
+  repeated_block.Append(repeated_block)
+  repeated_encrypted := black_box.EncryptWithPrefix(repeated_block)
+  repeated_encrypted.SetBlockSize(block_size)
+  min_dist, _ := repeated_encrypted.GetMinimumAndAverageHammingDistance()
+  if min_dist == 0 {
+    log.Printf("Min Hamming dist with repeated block %f: ECB.", min_dist)
+  } else {
+    log.Fatalf("Min Hamming dist with repeated block %f. Not ECB?", min_dist)
+  }
+
+  log.Printf("Time to attack!")
 }
