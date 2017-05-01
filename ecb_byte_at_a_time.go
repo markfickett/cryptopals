@@ -57,30 +57,42 @@ func find_block_size(bb *BlackBox) int {
 
 
 func decrypt(black_box *BlackBox, block_size int) *blocks.Blocks {
-  known_prefix := blocks.New()
+  attack_block := 0
+  padding_length := block_size - 1
+  decrypted := blocks.New()
+  num_encrypted_blocks := black_box.EncryptWithPrefix(blocks.New()).NumBlocks()
   for {
-    known_prefix.Append(blocks.FromString("*"))
-    if known_prefix.Len() == block_size - 1 {
-      break
+    padding := blocks.RepeatByte('*', padding_length)
+    encrypted_with_unknown_byte := black_box.EncryptWithPrefix(padding)
+    matched := false
+    for b := 0x0; b < (0x1 << 8); b++ {
+      possible_plaintext := padding.Copy()
+      possible_plaintext.Append(decrypted)
+      possible_plaintext.AppendByte(byte(b))
+      encrypted_with_known_byte := black_box.EncryptWithPrefix(
+          possible_plaintext)
+      matched = blocks.Equal(
+          encrypted_with_known_byte.Block(attack_block),
+          encrypted_with_unknown_byte.Block(attack_block))
+      if matched {
+        decrypted.AppendByte(byte(b))
+        break
+      }
     }
-  }
-  encrypted_with_unknown_byte := black_box.EncryptWithPrefix(known_prefix)
-  matched := false
-  for b := 0x0; b < (0x1 << 8); b++ {
-    possible_next_prefix := known_prefix.Copy()
-    possible_next_prefix.AppendByte(byte(b))
-    encrypted_with_known_byte := black_box.EncryptWithPrefix(
-        possible_next_prefix)
-    matched = blocks.Equal(
-        encrypted_with_known_byte.Block(0),
-        encrypted_with_unknown_byte.Block(0))
-    if matched {
-      known_prefix = possible_next_prefix
-      break
+    if !matched {
+      log.Fatalf("No byte matched after %q.", decrypted.ToString())
     }
-  }
 
-  return blocks.FromString(known_prefix.ToString()[block_size - 1:])
+    padding_length -= 1
+    if padding_length < 0 {
+      padding_length = block_size - 1
+      attack_block += 1
+      if attack_block >= num_encrypted_blocks {
+        break  // The attack is complete for all encrypted blocks.
+      }
+    }
+  }
+  return decrypted
 }
 
 
@@ -102,6 +114,6 @@ func main() {
   }
 
   log.Printf(
-      "Decrypted secret plaintext: %s",
+      "Decrypted secret plaintext: %q",
       decrypt(black_box, block_size).ToString())
 }
