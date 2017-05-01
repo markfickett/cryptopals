@@ -57,6 +57,15 @@ func FromBytes(input_buf []byte) *Blocks {
 }
 
 
+func RepeatByte(value byte, repeats int) *Blocks {
+  b := New()
+  for i := 0; i < repeats; i++ {
+    b.AppendByte(value)
+  }
+  return b
+}
+
+
 func (b *Blocks) AppendBytes(buf []byte) {
   b.buf.Write(buf)
 }

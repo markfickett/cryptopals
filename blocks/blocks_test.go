@@ -136,3 +136,14 @@ func TestSlice(t *testing.T) {
         expected_sliced.ToString(), sliced.ToString())
   }
 }
+
+
+func TestRepeatByte(t *testing.T) {
+  repeated := RepeatByte('x', 7)
+  expected := FromString("xxxxxxx")
+  if expected.ToString() != repeated.ToString() {
+    t.Errorf(
+        "Expected repeated to be %q but got %q.",
+        expected.ToString(), repeated.ToString())
+  }
+}
