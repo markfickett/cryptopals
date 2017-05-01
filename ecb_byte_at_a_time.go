@@ -56,6 +56,34 @@ func find_block_size(bb *BlackBox) int {
 }
 
 
+func decrypt(black_box *BlackBox, block_size int) *blocks.Blocks {
+  known_prefix := blocks.New()
+  for {
+    known_prefix.Append(blocks.FromString("*"))
+    if known_prefix.Len() == block_size - 1 {
+      break
+    }
+  }
+  encrypted_with_unknown_byte := black_box.EncryptWithPrefix(known_prefix)
+  matched := false
+  for b := 0x0; b < (0x1 << 8); b++ {
+    possible_next_prefix := known_prefix.Copy()
+    possible_next_prefix.AppendByte(byte(b))
+    encrypted_with_known_byte := black_box.EncryptWithPrefix(
+        possible_next_prefix)
+    matched = blocks.Equal(
+        encrypted_with_known_byte.Block(0),
+        encrypted_with_unknown_byte.Block(0))
+    if matched {
+      known_prefix = possible_next_prefix
+      break
+    }
+  }
+
+  return blocks.FromString(known_prefix.ToString()[block_size - 1:])
+}
+
+
 func main() {
   black_box := NewBlackBox()
 
@@ -73,5 +101,7 @@ func main() {
     log.Fatalf("Min Hamming dist with repeated block %f. Not ECB?", min_dist)
   }
 
-  log.Printf("Time to attack!")
+  log.Printf(
+      "Decrypted secret plaintext: %s",
+      decrypt(black_box, block_size).ToString())
 }
