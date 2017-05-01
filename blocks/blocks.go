@@ -61,6 +61,10 @@ func (b *Blocks) AppendBytes(buf []byte) {
   b.buf.Write(buf)
 }
 
+func (b *Blocks) AppendByte(value byte) {
+  b.buf.WriteByte(value)
+}
+
 
 func FromByte(value byte) *Blocks {
   return FromBytes([]byte{ value })
